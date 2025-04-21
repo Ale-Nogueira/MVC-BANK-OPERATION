@@ -20,7 +20,7 @@ def test_list_pessoas_juridica():
     print(response)
 
 @pytest.mark.skip(reason="interacao com o banco")
-def test_insert_person():
+def test_insert_pessoa_fisica():
     renda_mensal = 5000
     idade = 26
     nome_completo = "fulano de tal"
@@ -32,10 +32,31 @@ def test_insert_person():
     repo = PessoaFisicaRepository(db_connection_handler)
     repo.insert_pessoa_fisica(renda_mensal, idade, nome_completo, celular, email, categoria, saldo)
 
-def test_get_person():
+@pytest.mark.skip(reason="interacao com o banco")
+def test_get_pessoa_fisica():
     person_id = 1
 
     repo = PessoaFisicaRepository(db_connection_handler)
+    response = repo.get_person(person_id)
+    print()
+    print(response)
+
+def test_insert_pessoa_juridica():
+    faturamento = 100000
+    idade = 5
+    nome_fantasia = "empresa x"
+    celular = "119988554"
+    email_corporativo = "email@test"
+    categoria = "categoria A"
+    saldo = 120000
+
+    repo = PessoaFisicaRepository(db_connection_handler)
+    repo.insert_pessoa_fisica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
+
+def test_get_pessoa_juridica():
+    person_id = 1
+
+    repo = PessoaJuridicaRepository(db_connection_handler)
     response = repo.get_person(person_id)
     print()
     print(response)
