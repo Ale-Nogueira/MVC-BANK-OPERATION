@@ -8,7 +8,7 @@ disable=
       C0209, # Consider-using-f-string
       E0015, # unrecognized-option
       E0401, # Unable to import
-      
+      C0321, # multiple-statements
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists
