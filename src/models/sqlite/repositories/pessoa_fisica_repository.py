@@ -50,3 +50,51 @@ class PessoaFisicaRepository:
                 return person
             except NoResultFound:
                 return None
+
+    def sacar_dinheiro(self, person_id: int, valor: REAL) -> str:
+        with self.__db_connection as database:
+            try:
+                limite_saque = 2000
+
+                pessoa_fisica = (
+                    database.session
+                        .query(PessoaFisicaTable)
+                        .filter(PessoaFisicaTable.id == person_id)
+                        .one_or_none()
+                )
+
+                if pessoa_fisica is None:
+                    return "Cliente não encontrado"
+
+                if pessoa_fisica.saldo < valor:
+                    return "Saldo insuficiente!"
+
+                if valor > limite_saque:
+                    return f"O saque não pode exceder {limite_saque} para pessoa física."
+
+                pessoa_fisica.saldo -= valor
+
+                database.session.commit()
+                return f"Saque de {valor} realizado com sucesso! Saldo atual: {pessoa_fisica.saldo}"
+
+            except Exception as e:
+                database.session.rollback()
+                return f"Erro ao realizar o saque: {str(e)}"
+
+    def realizar_extrato(self, person_id: int) -> str:
+        with self.__db_connection as database:
+            try:
+                pessoa_fisica = (
+                    database.session
+                        .query(PessoaFisicaTable)
+                        .filter(PessoaFisicaTable.id == person_id)
+                        .one_or_none()
+                )
+
+                if pessoa_fisica is None:
+                    return "Cliente não encontrado"
+
+                return f"Extrato: Saldo atual é {pessoa_fisica.saldo}"
+
+            except Exception as e:
+                return f"Erro ao consultar o extrato: {str(e)}"
