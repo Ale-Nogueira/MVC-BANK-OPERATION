@@ -51,8 +51,8 @@ def test_insert_pessoa_juridica():
     categoria = "categoria A"
     saldo = 120000
 
-    repo = PessoaFisicaRepository(db_connection_handler)
-    repo.insert_pessoa_fisica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
+    repo = PessoaJuridicaRepository(db_connection_handler)
+    repo.insert_pessoa_juridica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_get_pessoa_juridica():

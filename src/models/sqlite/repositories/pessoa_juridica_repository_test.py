@@ -1,4 +1,5 @@
 from unittest import mock
+import pytest
 from sqlalchemy.orm.exc import NoResultFound
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
@@ -26,6 +27,7 @@ class MockConnection:
 class MockConnectionNoResult:
     def __init__(self) -> None:
         self.session = UnifiedAlchemyMagicMock()
+        self.session.commit.side_effect = Exception("Erro no banco")
         self.session.query.side_effect = self.__raise_no_result_found
 
     def __raise_no_result_found(self, *args, **kwargs):
@@ -55,3 +57,42 @@ def test_list_pessoa_juridica_no_result():
     mock_connection.session.filter.assert_not_called()
 
     assert response == []
+
+def test_insert_pessoa_juridica():
+    mock_connection = MockConnection()
+    repo = PessoaJuridicaRepository(mock_connection)
+
+    repo.insert_pessoa_juridica(
+        faturamento=50000,
+        idade=5,
+        nome_fantasia="Empresa x",
+        celular="999999999",
+        email_corporativo="Empresa@email.com",
+        categoria="Categoria A",
+        saldo=30000
+    )
+
+    mock_connection.session.add.assert_called_once()
+    added_instance = mock_connection.session.add.call_args[0][0]
+    assert isinstance(added_instance, PessoaJuridicaTable)
+    assert added_instance.nome_fantasia == "Empresa x"
+
+    mock_connection.session.commit.assert_called_once()
+    mock_connection.session.rollback.assert_not_called()
+
+def test_insert_pessoa_juridica_exception():
+    mock_connection = MockConnectionNoResult()
+    repo = PessoaJuridicaRepository(mock_connection)
+
+    with pytest.raises(Exception, match="Erro no banco"):
+        repo.insert_pessoa_juridica(
+            faturamento=50000,
+            idade=5,
+            nome_fantasia="Empresa Y",
+            celular="888888888",
+            email_corporativo="EmpresaY@email.com",
+            categoria="vip",
+            saldo=20000
+        )
+
+    mock_connection.session.rollback.assert_called_once()
