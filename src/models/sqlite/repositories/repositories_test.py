@@ -3,7 +3,7 @@ from src.models.sqlite.setting.connection import db_connection_handler
 from .pessoa_fisica_repository import PessoaFisicaRepository
 from.pessoa_juridica_repository import PessoaJuridicaRepository
 
-db_connection_handler.connect_to_db()
+#db_connection_handler.connect_to_db()
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_list_pessoas_fisica():
@@ -41,6 +41,7 @@ def test_get_pessoa_fisica():
     print()
     print(response)
 
+@pytest.mark.skip(reason="interacao com o banco")
 def test_insert_pessoa_juridica():
     faturamento = 100000
     idade = 5
@@ -53,6 +54,7 @@ def test_insert_pessoa_juridica():
     repo = PessoaFisicaRepository(db_connection_handler)
     repo.insert_pessoa_fisica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
 
+@pytest.mark.skip(reason="interacao com o banco")
 def test_get_pessoa_juridica():
     person_id = 1
 
