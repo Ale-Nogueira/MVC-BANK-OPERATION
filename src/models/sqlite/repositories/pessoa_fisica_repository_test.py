@@ -148,3 +148,12 @@ def test_sacar_dinheiro_cliente_nao_encontrado():
 
     assert result == "Cliente não encontrado"
     mock_connection.session.commit.assert_not_called()
+
+def test_sacar_dinheiro_pessoa_fisica_exception():
+    mock_connection = MockConnectionNoResult()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    with pytest.raises(Exception, match="Erro ao realizar saque"):
+        repo.sacar_dinheiro(person_id=2, valor= 1800)
+
+    mock_connection.session.rollback.assert_called_once()

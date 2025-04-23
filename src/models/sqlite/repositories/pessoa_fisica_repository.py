@@ -8,15 +8,15 @@ class PessoaFisicaRepository:
         self.__db_connection = db_connection
 
     def list_pessoa_fisica(self) -> List[PessoaFisicaTable]:
-        with self.__db_connection as databse:
+        with self.__db_connection as database:
             try:
-                pessoa_fisica = databse.session.query(PessoaFisicaTable).all()
+                pessoa_fisica = database.session.query(PessoaFisicaTable).all()
                 return pessoa_fisica
             except NoResultFound:
                 return []
 
     def insert_pessoa_fisica(self,renda_mensal: REAL, idade: int, nome_completo: str, celular: str, email: str, categoria: str, saldo: REAL) -> None:
-        with self.__db_connection as databse:
+        with self.__db_connection as database:
             try:
                 person_data = PessoaFisicaTable(
                     renda_mensal=renda_mensal,
@@ -27,10 +27,10 @@ class PessoaFisicaRepository:
                     categoria=categoria,
                     saldo=saldo
                 )
-                databse.session.add(person_data)
-                databse.session.commit()
+                database.session.add(person_data)
+                database.session.commit()
             except Exception as exception:
-                databse.session.rollback()
+                database.session.rollback()
                 raise exception
 
     def get_person(self, person_id: int) -> PessoaFisicaTable:
@@ -77,9 +77,9 @@ class PessoaFisicaRepository:
                 database.session.commit()
                 return f"Saque de {valor} realizado com sucesso! Saldo atual: {pessoa_fisica.saldo}"
 
-            except Exception as e:
+            except Exception as exception:
                 database.session.rollback()
-                return f"Erro ao realizar o saque: {str(e)}"
+                raise Exception("Erro ao realizar saque") from exception
 
     def realizar_extrato(self, person_id: int) -> str:
         with self.__db_connection as database:
