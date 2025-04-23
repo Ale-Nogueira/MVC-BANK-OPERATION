@@ -13,8 +13,7 @@ class MockConnection:
                 (
                     [mock.call.query(PessoaFisicaTable)], #query
                     [
-                        PessoaFisicaTable(id=2,  nome_completo="fulano", renda_mensal=5000, saldo=3000),
-                        PessoaFisicaTable(id=4, nome_completo="ciclano", renda_mensal=3000,saldo=2000)
+                        PessoaFisicaTable(id=2,  nome_completo="fulano", renda_mensal=5000, saldo=3000)
                     ], #resultado
 
                 )
@@ -36,6 +35,13 @@ class MockConnectionNoResult:
     def __enter__(self): return self
     def __exit__(self, exc_type, exc_val, exc_tb): pass
 
+class MockConnectionNotFound:
+    def __init__(self):
+        self.session = UnifiedAlchemyMagicMock()
+        self.session.query.return_value.filter.return_value.one_or_none.return_value = None
+
+    def __enter__(self): return self
+    def __exit__(self, exc_type, exc_val, exc_tb): pass
 
 def test_list_pessoa_fisica():
     mock_connection = MockConnection()
@@ -102,7 +108,43 @@ def test_sacar_dinheiro_pessoa_fisica():
     mock_connection = MockConnection()
     repo = PessoaFisicaRepository(mock_connection)
 
-    repo.sacar_dinheiro(person_id=2, valor=1800)
+    result = repo.sacar_dinheiro(person_id=2, valor=1800)
 
-    mock_connection.session.query.assert_called_once_with(PessoaFisicaTable)
-    mock_connection.session.filter.assert_called_once()
+    pessoa = mock_connection.session.query(PessoaFisicaTable).filter().one_or_none()
+
+    assert result == "Saque de 1800 realizado com sucesso! Saldo atual: 1200"
+    assert pessoa.saldo == 1200
+    mock_connection.session.commit.assert_called_once()
+
+def test_sacar_dinheiro_saldo_insuficiente():
+    mock_connection = MockConnection()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    result = repo.sacar_dinheiro(person_id=2, valor=4000)
+
+    pessoa = mock_connection.session.query(PessoaFisicaTable).filter().one_or_none()
+
+    assert result == "Saldo insuficiente!"
+    assert pessoa.saldo == 3000
+    mock_connection.session.commit.assert_not_called()
+
+def test_sacar_dinheiro_valor_acima_limite():
+    mock_connection = MockConnection()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    result = repo.sacar_dinheiro(person_id=2, valor=2500)
+
+    pessoa = mock_connection.session.query(PessoaFisicaTable).filter().one_or_none()
+
+    assert result == "O saque não pode exceder 2000 para pessoa física."
+    assert pessoa.saldo == 3000  # saldo original
+    mock_connection.session.commit.assert_not_called()
+
+def test_sacar_dinheiro_cliente_nao_encontrado():
+    mock_connection = MockConnectionNotFound()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    result = repo.sacar_dinheiro(person_id=999, valor=100)
+
+    assert result == "Cliente não encontrado"
+    mock_connection.session.commit.assert_not_called()
