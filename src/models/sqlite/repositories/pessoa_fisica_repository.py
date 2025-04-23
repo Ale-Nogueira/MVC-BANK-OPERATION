@@ -2,6 +2,7 @@ from typing import List
 from sqlalchemy import REAL
 from sqlalchemy.orm.exc import NoResultFound
 from src.models.sqlite.entities.pessoa_fisica import PessoaFisicaTable
+from src.models.sqlite.entities.extrato import ExtratoTable
 
 class PessoaFisicaRepository:
     def __init__(self, db_connection) -> None:
@@ -73,28 +74,14 @@ class PessoaFisicaRepository:
                     return f"O saque não pode exceder {limite_saque} para pessoa física."
 
                 pessoa_fisica.saldo -= valor
-
+                extrato = ExtratoTable(
+                    pessoa_fisica_id=person_id,
+                    valor=valor
+                )
+                database.session.add(extrato)
                 database.session.commit()
                 return f"Saque de {valor} realizado com sucesso! Saldo atual: {pessoa_fisica.saldo}"
 
             except Exception as exception:
                 database.session.rollback()
                 raise Exception("Erro ao realizar saque") from exception
-
-    def realizar_extrato(self, person_id: int) -> str:
-        with self.__db_connection as database:
-            try:
-                pessoa_fisica = (
-                    database.session
-                        .query(PessoaFisicaTable)
-                        .filter(PessoaFisicaTable.id == person_id)
-                        .one_or_none()
-                )
-
-                if pessoa_fisica is None:
-                    return "Cliente não encontrado"
-
-                return f"Extrato: Saldo atual é {pessoa_fisica.saldo}"
-
-            except Exception as e:
-                return f"Erro ao consultar o extrato: {str(e)}"

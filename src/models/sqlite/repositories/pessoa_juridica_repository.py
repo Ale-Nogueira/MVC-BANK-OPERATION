@@ -8,15 +8,15 @@ class PessoaJuridicaRepository:
         self.__db_connection = db_connection
 
     def list_pessoa_juridica(self) -> List[PessoaJuridicaTable]:
-        with self.__db_connection as databse:
+        with self.__db_connection as database:
             try:
-                pessoa_juridica = databse.session.query(PessoaJuridicaTable).all()
+                pessoa_juridica = database.session.query(PessoaJuridicaTable).all()
                 return pessoa_juridica
             except NoResultFound:
                 return []
 
     def insert_pessoa_juridica(self,faturamento: REAL, idade: int, nome_fantasia: str, celular: str, email_corporativo: str, categoria: str, saldo: REAL) -> None:
-        with self.__db_connection as databse:
+        with self.__db_connection as database:
             try:
                 person_data = PessoaJuridicaTable(
                     faturamento=faturamento,
@@ -27,10 +27,10 @@ class PessoaJuridicaRepository:
                     categoria=categoria,
                     saldo=saldo
                 )
-                databse.session.add(person_data)
-                databse.session.commit()
+                database.session.add(person_data)
+                database.session.commit()
             except Exception as exception:
-                databse.session.rollback()
+                database.session.rollback()
                 raise exception
 
     def get_person(self, person_id: int) -> PessoaJuridicaTable:
