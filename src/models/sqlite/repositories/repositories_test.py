@@ -66,9 +66,18 @@ def test_get_pessoa_juridica():
 @pytest.mark.skip(reason="interacao com o banco")
 def test_sacar_dinheiro_pessoa_fisica():
     person_id = 1
-    valor = 1900
+    valor = 2000
 
     repo = PessoaFisicaRepository(db_connection_handler)
     response = repo.sacar_dinheiro(person_id, valor)
+    print()
+    print(response)
+
+@pytest.mark.skip(reason="interacao com o banco")
+def test_realizar_extrato():
+    person_id = 1
+
+    repo = PessoaFisicaRepository(db_connection_handler)
+    response = repo.realizar_extrato(person_id)
     print()
     print(response)

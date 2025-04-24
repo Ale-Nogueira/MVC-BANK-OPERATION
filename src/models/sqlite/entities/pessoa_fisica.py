@@ -1,5 +1,4 @@
 from sqlalchemy import Column, String, BIGINT, REAL
-from sqlalchemy.orm import relationship
 from src.models.sqlite.setting.base import Base
 
 
@@ -14,7 +13,6 @@ class PessoaFisicaTable(Base):
     email = Column(String, nullable=False)
     categoria = Column(String)
     saldo = Column(REAL)
-    extratos = relationship("ExtratoTable", back_populates="pessoa_fisica")
 
     def __repr__(self):
         return f"pessoa_fisica [name={self.nome_completo}, renda={self.renda_mensal}]"

@@ -1,6 +1,8 @@
-from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, ForeignKey, REAL
+from sqlalchemy.orm import relationship
 from src.models.sqlite.setting.base import Base
+from .pessoa_fisica import PessoaFisicaTable
+from .pessoa_juridica import PessoaJuridicaTable
 
 class ExtratoTable(Base):
     __tablename__ = "extrato"
@@ -10,5 +12,7 @@ class ExtratoTable(Base):
     pessoa_juridica_id = Column(Integer, ForeignKey("pessoa_juridica.id"), nullable=True)
     valor = Column(REAL)
 
-    pessoa_fisica = relationship("PessoaFisicaTable", back_populates="extratos")
-    pessoa_juridica = relationship("PessoaJuridicaTable", back_populates="extratos")
+ExtratoTable.pessoa_fisica = relationship("PessoaFisicaTable", back_populates="extratos")
+ExtratoTable.pessoa_juridica = relationship("PessoaJuridicaTable", back_populates="extratos")
+PessoaFisicaTable.extratos = relationship("ExtratoTable", back_populates="pessoa_fisica")
+PessoaJuridicaTable.extratos = relationship("ExtratoTable", back_populates="pessoa_juridica")

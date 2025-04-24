@@ -85,3 +85,32 @@ class PessoaFisicaRepository:
             except Exception as exception:
                 database.session.rollback()
                 raise Exception("Erro ao realizar saque") from exception
+
+    def realizar_extrato(self, person_id: int) -> str:
+        with self.__db_connection as database:
+            try:
+                pessoa_fisica = (
+                    database.session
+                        .query(PessoaFisicaTable)
+                        .filter(PessoaFisicaTable.id == person_id)
+                        .one_or_none()
+                )
+
+                if pessoa_fisica is None:
+                    return "Cliente não encontrado"
+
+                extratos = (
+                    database.session
+                        .query(ExtratoTable)
+                        .filter(ExtratoTable.pessoa_fisica_id == person_id)
+                        .all()
+                )
+
+                historico = [f"Saque de R${e.valor:.2f}" for e in extratos]
+                historico_texto = "\n".join(historico)
+
+                return f"Extrato de saques:\n{historico_texto}\nSaldo atual: R${pessoa_fisica.saldo:.2f}"
+
+            except Exception as exception:
+                database.session.rollback()
+                raise Exception("Erro ao consultar o extrato") from exception
