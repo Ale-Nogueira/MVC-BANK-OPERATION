@@ -15,9 +15,7 @@ class MockConnection:
                     [
                         PessoaFisicaTable(id=2,  nome_completo="fulano", renda_mensal=5000, saldo=3000)
                     ], #resultado
-
                 )
-
             ]
         )
     def __enter__(self): return self
@@ -117,7 +115,7 @@ def test_sacar_dinheiro_pessoa_fisica():
     assert pessoa.saldo == 1200
     mock_connection.session.commit.assert_called_once()
 
-def test_sacar_dinheiro_saldo_insuficiente():
+def test_saldo_insuficiente_pessoa_fisica():
     mock_connection = MockConnection()
     repo = PessoaFisicaRepository(mock_connection)
 
@@ -129,7 +127,7 @@ def test_sacar_dinheiro_saldo_insuficiente():
     assert pessoa.saldo == 3000
     mock_connection.session.commit.assert_not_called()
 
-def test_sacar_dinheiro_valor_acima_limite():
+def test_valor_acima_limite_pessoa_fisica():
     mock_connection = MockConnection()
     repo = PessoaFisicaRepository(mock_connection)
 
@@ -138,10 +136,10 @@ def test_sacar_dinheiro_valor_acima_limite():
     pessoa = mock_connection.session.query(PessoaFisicaTable).filter().one_or_none()
 
     assert result == "O saque não pode exceder 2000 para pessoa física."
-    assert pessoa.saldo == 3000  # saldo original
+    assert pessoa.saldo == 3000
     mock_connection.session.commit.assert_not_called()
 
-def test_adicionar_extrato():
+def test_adicionar_extrato_pessoa_fisica():
     mock_connection = MockConnection()
     repo = PessoaFisicaRepository(mock_connection)
 
@@ -153,7 +151,7 @@ def test_adicionar_extrato():
     assert extrato_adicionado.valor == 1000
 
 
-def test_sacar_dinheiro_cliente_nao_encontrado():
+def test_cliente_nao_encontrado_pessoa_fisica():
     mock_connection = MockConnectionNotFound()
     repo = PessoaFisicaRepository(mock_connection)
 
@@ -162,11 +160,46 @@ def test_sacar_dinheiro_cliente_nao_encontrado():
     assert result == "Cliente não encontrado"
     mock_connection.session.commit.assert_not_called()
 
-def test_sacar_dinheiro_pessoa_fisica_exception():
+def test_exception_sacar_dinheiro():
     mock_connection = MockConnectionNoResult()
     repo = PessoaFisicaRepository(mock_connection)
 
     with pytest.raises(Exception, match="Erro ao realizar saque"):
         repo.sacar_dinheiro(person_id=2, valor= 1800)
+
+    mock_connection.session.rollback.assert_called_once()
+
+def test_realizar_extrato_pessoa_fisica():
+    mock_connection = MockConnection()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    repo.sacar_dinheiro(person_id=2, valor=400)
+
+    response = repo.realizar_extrato(person_id=2)
+    mock_connection.session.query.assert_any_call(PessoaFisicaTable)
+    mock_connection.session.query.assert_any_call(ExtratoTable)
+    assert "Saque de R$400.00" in response
+    assert "Saldo atual: R$2600.00" in response
+
+def test_extrato_pessoa_fisica_not_found():
+    mock_connection = MockConnectionNotFound()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    response = repo.realizar_extrato(person_id=99)
+    assert response == "Cliente não encontrado"
+
+def test_not_extrato_pessoa_fisica():
+    mock_connection = MockConnection()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    response = repo.realizar_extrato(person_id=2)
+    assert response == "Sem movimentação para o cliente 2."
+
+def test_exception_extrato():
+    mock_connection = MockConnectionNoResult()
+    repo = PessoaFisicaRepository(mock_connection)
+
+    with pytest.raises(Exception, match="Erro ao consultar o extrato"):
+        repo.realizar_extrato(person_id=2)
 
     mock_connection.session.rollback.assert_called_once()

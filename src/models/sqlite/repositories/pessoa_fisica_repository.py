@@ -106,6 +106,9 @@ class PessoaFisicaRepository:
                         .all()
                 )
 
+                if not extratos:
+                    return f"Sem movimentação para o cliente {person_id}."
+
                 historico = [f"Saque de R${e.valor:.2f}" for e in extratos]
                 historico_texto = "\n".join(historico)
 
