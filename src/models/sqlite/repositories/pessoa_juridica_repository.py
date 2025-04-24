@@ -2,6 +2,7 @@ from typing import List
 from sqlalchemy import REAL
 from sqlalchemy.orm.exc import NoResultFound
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
+from src.models.sqlite.entities.extrato import ExtratoTable
 
 class PessoaJuridicaRepository:
     def __init__(self, db_connection) -> None:
@@ -50,3 +51,37 @@ class PessoaJuridicaRepository:
                 return person
             except NoResultFound:
                 return None
+
+    def sacar_dinheiro(self, person_id: int, valor: REAL) -> str:
+        with self.__db_connection as database:
+            try:
+                limite_saque = 10000
+
+                pessoa_juridica = (
+                    database.session
+                        .query(PessoaJuridicaTable)
+                        .filter(PessoaJuridicaTable.id == person_id)
+                        .one_or_none()
+                )
+
+                if pessoa_juridica is None:
+                    return "Empresa não encontrada"
+
+                if pessoa_juridica.saldo < valor:
+                    return "Saldo insuficiente!"
+
+                if valor > limite_saque:
+                    return f"O saque não pode exceder {limite_saque} para pessoa juridica."
+
+                pessoa_juridica.saldo -= valor
+                extrato = ExtratoTable(
+                    pessoa_juridica_id=person_id,
+                    valor=valor
+                )
+                database.session.add(extrato)
+                database.session.commit()
+                return f"Saque de {valor} realizado com sucesso! Saldo atual: {pessoa_juridica.saldo}"
+
+            except Exception as exception:
+                database.session.rollback()
+                raise Exception("Erro ao realizar saque") from exception

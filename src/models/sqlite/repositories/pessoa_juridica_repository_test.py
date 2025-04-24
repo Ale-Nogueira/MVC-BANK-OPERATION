@@ -13,8 +13,7 @@ class MockConnection:
                 (
                     [mock.call.query(PessoaJuridicaTable)], #query
                     [
-                        PessoaJuridicaTable(nome_fantasia="empresa x", faturamento=120000),
-                        PessoaJuridicaTable(nome_fantasia="empresa y", faturamento=100000)
+                        PessoaJuridicaTable(id=2, nome_fantasia="empresa x", faturamento=120000, saldo=50000)
                     ], #resultado
 
                 )
@@ -96,3 +95,15 @@ def test_insert_pessoa_juridica_exception():
         )
 
     mock_connection.session.rollback.assert_called_once()
+
+def test_sacar_dinheiro_pessoa_juridica():
+    mock_connection = MockConnection()
+    repo = PessoaJuridicaRepository(mock_connection)
+
+    result = repo.sacar_dinheiro(person_id=2, valor=3000)
+
+    pessoa = mock_connection.session.query(PessoaJuridicaTable).filter().one_or_none()
+
+    assert result == "Saque de 3000 realizado com sucesso! Saldo atual: 47000"
+    assert pessoa.saldo == 47000
+    mock_connection.session.commit.assert_called_once()
