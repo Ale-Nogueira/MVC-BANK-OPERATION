@@ -3,8 +3,9 @@ from sqlalchemy import REAL
 from sqlalchemy.orm.exc import NoResultFound
 from src.models.sqlite.entities.pessoa_fisica import PessoaFisicaTable
 from src.models.sqlite.entities.extrato import ExtratoTable
+from src.models.sqlite.interfaces.cliente_interface import ClienteInterface
 
-class PessoaFisicaRepository:
+class PessoaFisicaRepository(ClienteInterface):
     def __init__(self, db_connection) -> None:
         self.__db_connection = db_connection
 

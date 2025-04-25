@@ -3,8 +3,10 @@ from sqlalchemy import REAL
 from sqlalchemy.orm.exc import NoResultFound
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
 from src.models.sqlite.entities.extrato import ExtratoTable
+from src.models.sqlite.interfaces.cliente_interface import ClienteInterface
 
-class PessoaJuridicaRepository:
+
+class PessoaJuridicaRepository(ClienteInterface):
     def __init__(self, db_connection) -> None:
         self.__db_connection = db_connection
 
@@ -85,3 +87,35 @@ class PessoaJuridicaRepository:
             except Exception as exception:
                 database.session.rollback()
                 raise Exception("Erro ao realizar saque") from exception
+
+    def realizar_extrato(self, person_id: int) -> str:
+        with self.__db_connection as database:
+            try:
+                pessoa_juridica = (
+                    database.session
+                        .query(PessoaJuridicaTable)
+                        .filter(PessoaJuridicaTable.id == person_id)
+                        .one_or_none()
+                )
+
+                if pessoa_juridica is None:
+                    return "Empresa não encontrada"
+
+                extratos = (
+                    database.session
+                        .query(ExtratoTable)
+                        .filter(ExtratoTable.pessoa_juridica_id == person_id)
+                        .all()
+                )
+
+                if not extratos:
+                    return f"Sem movimentação para a empresa {person_id}."
+
+                historico = [f"Saque de R${e.valor:.2f}" for e in extratos]
+                historico_texto = "\n".join(historico)
+
+                return f"Extrato de saques:\n{historico_texto}\nSaldo atual: R${pessoa_juridica.saldo:.2f}"
+
+            except Exception as exception:
+                database.session.rollback()
+                raise Exception("Erro ao consultar o extrato") from exception
