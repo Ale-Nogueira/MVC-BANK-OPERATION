@@ -5,8 +5,8 @@ class PessoaFisicaSaqueController:
         self.__pessoa_fisica_repository = pessoa_fisica_repository
 
     def sacar(self, saque_info: dict) -> dict:
-        person_id = saque_info.get("id")
-        valor = saque_info.get("valor")
+        person_id = saque_info["person_id"]
+        valor = saque_info["valor"]
 
         self.__validate_id_and_valor(person_id, valor)
         self.__sacar_dinheiro(person_id, valor)
