@@ -1,20 +1,21 @@
 import pytest
 from src.models.sqlite.setting.connection import db_connection_handler
 from .pessoa_fisica_repository import PessoaFisicaRepository
-from.pessoa_juridica_repository import PessoaJuridicaRepository
+from .pessoa_juridica_repository import PessoaJuridicaRepository
+from .bank_repository import BankRepository
 
 #db_connection_handler.connect_to_db()
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_list_pessoas_fisica():
-    repo = PessoaFisicaRepository(db_connection_handler)
+    repo = BankRepository(db_connection_handler)
     response = repo.list_pessoa_fisica()
     print()
     print(response)
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_list_pessoas_juridica():
-    repo = PessoaJuridicaRepository(db_connection_handler)
+    repo = BankRepository(db_connection_handler)
     response = repo.list_pessoa_juridica()
     print()
     print(response)
@@ -29,15 +30,15 @@ def test_insert_pessoa_fisica():
     categoria = "categoria A"
     saldo = 10000
 
-    repo = PessoaFisicaRepository(db_connection_handler)
+    repo = BankRepository(db_connection_handler)
     repo.insert_pessoa_fisica(renda_mensal, idade, nome_completo, celular, email, categoria, saldo)
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_get_pessoa_fisica():
     person_id = 1
 
-    repo = PessoaFisicaRepository(db_connection_handler)
-    response = repo.get_person(person_id)
+    repo = BankRepository(db_connection_handler)
+    response = repo.get_person_fisica(person_id)
     print()
     print(response)
 
@@ -51,15 +52,15 @@ def test_insert_pessoa_juridica():
     categoria = "categoria A"
     saldo = 120000
 
-    repo = PessoaJuridicaRepository(db_connection_handler)
+    repo = BankRepository(db_connection_handler)
     repo.insert_pessoa_juridica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
 
 @pytest.mark.skip(reason="interacao com o banco")
 def test_get_pessoa_juridica():
     person_id = 1
 
-    repo = PessoaJuridicaRepository(db_connection_handler)
-    response = repo.get_person(person_id)
+    repo = BankRepository(db_connection_handler)
+    response = repo.get_person_juridica(person_id)
     print()
     print(response)
 

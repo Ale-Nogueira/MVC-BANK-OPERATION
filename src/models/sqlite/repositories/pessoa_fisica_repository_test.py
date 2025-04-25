@@ -41,68 +41,6 @@ class MockConnectionNotFound:
     def __enter__(self): return self
     def __exit__(self, exc_type, exc_val, exc_tb): pass
 
-
-def test_list_pessoa_fisica():
-    mock_connection = MockConnection()
-    repo = PessoaFisicaRepository(mock_connection)
-    response = repo.list_pessoa_fisica()
-
-    mock_connection.session.query.assert_called_once_with(PessoaFisicaTable)
-    mock_connection.session.all.assert_called_once()
-    mock_connection.session.filter.assert_not_called()
-
-    assert response[0].nome_completo== "fulano"
-
-def test_list_pessoa_fisica_no_result():
-    mock_connection = MockConnectionNoResult()
-    repo = PessoaFisicaRepository(mock_connection)
-    response = repo.list_pessoa_fisica()
-
-    mock_connection.session.query.assert_called_once_with(PessoaFisicaTable)
-    mock_connection.session.all.assert_not_called()
-    mock_connection.session.filter.assert_not_called()
-
-    assert response == []
-
-def test_insert_pessoa_fisica():
-    mock_connection = MockConnection()
-    repo = PessoaFisicaRepository(mock_connection)
-
-    repo.insert_pessoa_fisica(
-        renda_mensal=5000,
-        idade=30,
-        nome_completo="Fulano de Tal",
-        celular="999999999",
-        email="Fulano@email.com",
-        categoria="Categoria A",
-        saldo=1500
-    )
-
-    mock_connection.session.add.assert_called_once()
-    added_instance = mock_connection.session.add.call_args[0][0]
-    assert isinstance(added_instance, PessoaFisicaTable)
-    assert added_instance.nome_completo == "Fulano de Tal"
-
-    mock_connection.session.commit.assert_called_once()
-    mock_connection.session.rollback.assert_not_called()
-
-def test_insert_pessoa_fisica_exception():
-    mock_connection = MockConnectionNoResult()
-    repo = PessoaFisicaRepository(mock_connection)
-
-    with pytest.raises(Exception, match="Erro no banco"):
-        repo.insert_pessoa_fisica(
-            renda_mensal=5000,
-            idade=30,
-            nome_completo="Maria da Silva",
-            celular="888888888",
-            email="maria@email.com",
-            categoria="vip",
-            saldo=2000
-        )
-
-    mock_connection.session.rollback.assert_called_once()
-
 def test_sacar_dinheiro_pessoa_fisica():
     mock_connection = MockConnection()
     repo = PessoaFisicaRepository(mock_connection)
