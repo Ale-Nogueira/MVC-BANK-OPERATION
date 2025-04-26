@@ -3,9 +3,10 @@ from sqlalchemy import REAL
 from sqlalchemy.orm.exc import NoResultFound
 from src.models.sqlite.entities.pessoa_fisica import PessoaFisicaTable
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
+from src.models.sqlite.interfaces.bank_interface import BankInterface
 
 
-class BankRepository:
+class BankRepository(BankInterface):
     def __init__(self,db_connection) -> None:
         self.__db_connection = db_connection
 
