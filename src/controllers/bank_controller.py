@@ -18,12 +18,12 @@ class BankListController:
     def __format_response(self, pessoa_fisica: List[PessoaFisicaTable]) -> dict:
         formatted_pessoa_fisica = []
         for pessoa in pessoa_fisica:
-            formatted_pessoa_fisica.append({"name": pessoa.nome_completo, "age": pessoa.idade, "email": pessoa.email, "id": pessoa.id})
+            formatted_pessoa_fisica.append({"nome_completo": pessoa.nome_completo, "idade": pessoa.idade, "email": pessoa.email, "id": pessoa.id})
 
-            return {
-                "data": {
-                    "type": "Pessoa Fisica",
-                    "count": len(formatted_pessoa_fisica),
-                    "attributes": formatted_pessoa_fisica
-                }
+        return {
+            "data": {
+                "type": "Pessoa Fisica",
+                "count": len(formatted_pessoa_fisica),
+                "attributes": formatted_pessoa_fisica
             }
+        }
