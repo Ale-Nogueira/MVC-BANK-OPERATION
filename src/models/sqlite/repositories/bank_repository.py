@@ -89,7 +89,7 @@ class BankRepository(BankInterface):
                         .filter(PessoaJuridicaTable.id == person_id)
                         .with_entities(
                             PessoaJuridicaTable.nome_fantasia,
-                            PessoaJuridicaTable.idade,
+                            PessoaJuridicaTable.email_corporativo,
                             PessoaJuridicaTable.faturamento
                         )
                         .one()

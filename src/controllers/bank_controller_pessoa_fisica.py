@@ -3,7 +3,7 @@ import re
 from src.models.sqlite.interfaces.bank_interface import BankInterface
 from src.models.sqlite.entities.pessoa_fisica import PessoaFisicaTable
 
-class BankListPessoaFisicaController:
+class BankListController:
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 
@@ -29,7 +29,7 @@ class BankListPessoaFisicaController:
             }
         }
 
-class BankInsertPessoaFisicaController:
+class BankInsertController:
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 
@@ -65,7 +65,7 @@ class BankInsertPessoaFisicaController:
             }
         }
 
-class BankFinderPessoaFisicaController:
+class BankFinderController:
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 

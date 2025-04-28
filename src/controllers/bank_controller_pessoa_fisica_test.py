@@ -1,9 +1,9 @@
 #pylint: disable=unused-argument
 import pytest
 from src.models.sqlite.entities.pessoa_fisica import PessoaFisicaTable
-from .bank_controller import BankListPessoaFisicaController
-from .bank_controller import BankInsertPessoaFisicaController
-from .bank_controller import BankFinderPessoaFisicaController
+from .bank_controller_pessoa_fisica import BankListController
+from .bank_controller_pessoa_fisica import BankInsertController
+from .bank_controller_pessoa_fisica import BankFinderController
 
 class MockPerson():
     def __init__(self, nome_completo, idade, saldo) -> None:
@@ -28,8 +28,8 @@ class MockBankRepository:
             saldo=3000
         )
 
-def test_list_pessoa_fisica():
-    controller = BankListPessoaFisicaController(MockBankRepository())
+def test_list():
+    controller = BankListController(MockBankRepository())
     response = controller.list_pessoa_fisica()
 
     expected_response = {
@@ -45,7 +45,7 @@ def test_list_pessoa_fisica():
 
     assert response == expected_response
 
-def test_insert_pessoa_fisica():
+def test_insert():
     person_info = {
         "renda_mensal": 5000,
         "idade": 25,
@@ -56,14 +56,14 @@ def test_insert_pessoa_fisica():
         "saldo": 3000
     }
 
-    controller = BankInsertPessoaFisicaController(MockBankRepository())
+    controller = BankInsertController(MockBankRepository())
     response =  controller.insert(person_info)
 
     assert response["data"]["type"] == "Pessoa Fisica"
     assert response["data"]["count"] == 1
     assert response["data"]["attributes"] == person_info
 
-def test_insert_pessoa_fisica_error():
+def test_insert_error():
     person_info = {
         "renda_mensal": 5000,
         "idade": 25,
@@ -74,12 +74,12 @@ def test_insert_pessoa_fisica_error():
         "saldo": 3000
     }
 
-    controller = BankInsertPessoaFisicaController(MockBankRepository())
+    controller = BankInsertController(MockBankRepository())
     with pytest.raises(Exception):
         controller.insert(person_info)
 
-def test_find_pessoa_fisica():
-    controller = BankFinderPessoaFisicaController(MockBankRepository())
+def test_find():
+    controller = BankFinderController(MockBankRepository())
     response = controller.find(123)
 
     expected_response = {
