@@ -64,3 +64,32 @@ class BankInsertPessoaFisicaController:
                 "attributes": person_info
             }
         }
+
+class BankFinderPessoaFisicaController:
+    def __init__(self, bank_repository: BankInterface) -> None:
+        self.__bank_repository = bank_repository
+
+    def find(self, person_id) -> dict:
+        person = self.__find_person_ind_db(person_id)
+        response = self.__format_response(person)
+        return response
+
+    def __find_person_ind_db(self, person_id: int) -> PessoaFisicaTable:
+        person = self.__bank_repository.get_person_fisica(person_id)
+        if not person:
+            raise Exception("Pessoa não encontrada!")
+
+        return person
+
+    def __format_response(self, person: PessoaFisicaTable) -> dict:
+        return {
+            "data": {
+                "type": "Pessoa Fisica",
+                "count": 1,
+                "attributes": {
+                    "nome_completo": person.nome_completo,
+                    "idade": person.idade,
+                    "saldo": person.saldo
+                }
+            }
+        }

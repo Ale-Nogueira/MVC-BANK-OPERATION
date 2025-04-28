@@ -46,7 +46,7 @@ class BankRepository(BankInterface):
                         .with_entities(
                             PessoaFisicaTable.nome_completo,
                             PessoaFisicaTable.idade,
-                            PessoaFisicaTable.renda_mensal
+                            PessoaFisicaTable.saldo
                         )
                         .one()
                 )
