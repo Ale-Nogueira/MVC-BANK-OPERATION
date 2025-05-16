@@ -2,8 +2,9 @@ from typing import List
 import re
 from src.models.sqlite.interfaces.bank_interface import BankInterface
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
+from .interfaces.bank_controller_pessoa_juridica import BankFinderControllerInterface, BankInsertControllerInterface, BankListControllerInterface
 
-class BankListController:
+class BankListController(BankListControllerInterface):
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 
@@ -29,7 +30,7 @@ class BankListController:
             }
         }
 
-class BankInsertController:
+class BankInsertController(BankInsertControllerInterface):
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 
@@ -65,7 +66,7 @@ class BankInsertController:
             }
         }
 
-class BankFinderController:
+class BankFinderController(BankFinderControllerInterface):
     def __init__(self, bank_repository: BankInterface) -> None:
         self.__bank_repository = bank_repository
 

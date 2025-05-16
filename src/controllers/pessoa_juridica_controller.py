@@ -1,6 +1,7 @@
 from src.models.sqlite.interfaces.cliente_interface import ClienteInterface
+from .interfaces.pessoa_juridica_controller import PessoaJuridicaExtratoControllerInterface, PessoaJuridicaSaqueControllerInterface
 
-class PessoaJuridicaSaqueController:
+class PessoaJuridicaSaqueController(PessoaJuridicaSaqueControllerInterface):
     def __init__(self, pessoa_juridica_repository: ClienteInterface) -> None:
         self.__pessoa_juridica_repository = pessoa_juridica_repository
 
@@ -29,7 +30,7 @@ class PessoaJuridicaSaqueController:
             }
         }
 
-class PessoaJuridicaExtratoController:
+class PessoaJuridicaExtratoController(PessoaJuridicaExtratoControllerInterface):
     def __init__(self, pessoa_juridica_repository: ClienteInterface) -> None:
         self.__pessoa_juridica_repository = pessoa_juridica_repository
 
