@@ -116,8 +116,8 @@ def test_realizar_extrato_pessoa_fisica():
     response = repo.realizar_extrato(person_id=2)
     mock_connection.session.query.assert_any_call(PessoaFisicaTable)
     mock_connection.session.query.assert_any_call(ExtratoTable)
-    assert "Saque de R$400.00" in response
-    assert "Saldo atual: R$2600.00" in response
+    assert response["saldo_atual"] == 2600.0
+    assert response["saques"] == [{"valor": 400.0}]
 
 def test_extrato_pessoa_fisica_not_found():
     mock_connection = MockConnectionNotFound()

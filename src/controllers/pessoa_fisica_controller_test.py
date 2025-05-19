@@ -1,13 +1,16 @@
+# pylint: disable=W0613:unused-argument
 import pytest
 from .pessoa_fisica_controller import PessoaFisicaSaqueController, PessoaFisicaExtratoController
-
 
 class MockPessoaFisica:
     def sacar_dinheiro(self, person_id: int, valor: int):
         pass
 
     def realizar_extrato(self, person_id: int):
-        pass
+        return {
+            "saques": [{"valor": 100.0}],
+            "saldo_atual": 900.0
+        }
 
 def test_saque():
     saque_info = {
@@ -43,7 +46,8 @@ def test_extrato():
 
     assert response["data"]["type"] == "Extrato"
     assert response["data"]["count"] == 1
-    assert response["data"]["attributes"] == extrato_info
+    assert response["data"]["attributes"]["saques"] == [{"valor": 100.0}]
+    assert response["data"]["attributes"]["saldo_atual"] == 900.0
 
 def test_extrato_error():
     extrato_info = {

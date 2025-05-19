@@ -18,7 +18,7 @@ class PessoaFisicaExtratoView(ViewInterface):
         self.__controller = controller
 
     def handle(self, http_request: HttpRequest) -> HttpResponse:
-        extrato_info = http_request.body
-        body_response = self.__controller.extrato(extrato_info)
+        person_id = http_request.body
+        body_response = self.__controller.extrato(person_id)
 
         return HttpResponse(status_code=200, body=body_response)
