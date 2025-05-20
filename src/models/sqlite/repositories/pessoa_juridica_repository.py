@@ -65,10 +65,12 @@ class PessoaJuridicaRepository(ClienteInterface):
                 if not extratos:
                     return f"Sem movimentação para a empresa {person_id}."
 
-                historico = [f"Saque de R${e.valor:.2f}" for e in extratos]
-                historico_texto = "\n".join(historico)
+                saques = [{"valor": float(e.valor)} for e in extratos]
 
-                return f"Extrato de saques:\n{historico_texto}\nSaldo atual: R${pessoa_juridica.saldo:.2f}"
+                return {
+                    "saques": saques,
+                    "saldo_atual": float(pessoa_juridica.saldo)
+                }
 
             except Exception as exception:
                 database.session.rollback()

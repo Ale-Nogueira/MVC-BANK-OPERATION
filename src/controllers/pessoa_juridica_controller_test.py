@@ -1,3 +1,4 @@
+# pylint: disable=W0613:unused-argument
 import pytest
 from .pessoa_juridica_controller import PessoaJuridicaSaqueController, PessoaJuridicaExtratoController
 
@@ -7,7 +8,10 @@ class MockPessoaJuridica:
         pass
 
     def realizar_extrato(self, person_id: int):
-        pass
+        return {
+            "saques": [{"valor": 1000.0}],
+            "saldo_atual": 9000.0
+        }
 
 def test_saque():
     saque_info = {
@@ -43,7 +47,8 @@ def test_extrato():
 
     assert response["data"]["type"] == "Extrato"
     assert response["data"]["count"] == 1
-    assert response["data"]["attributes"] == extrato_info
+    assert response["data"]["attributes"]["saques"] == [{"valor": 1000.0}]
+    assert response["data"]["attributes"]["saldo_atual"] == 9000.0
 
 def test_extrato_error():
     extrato_info = {

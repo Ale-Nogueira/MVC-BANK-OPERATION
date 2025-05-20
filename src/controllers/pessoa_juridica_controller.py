@@ -38,7 +38,7 @@ class PessoaJuridicaExtratoController(PessoaJuridicaExtratoControllerInterface):
         person_id = extrato_info["person_id"]
 
         self.__validate_id(person_id)
-        self.__realizar_saque(person_id)
+        extrato_info = self.__realizar_extrato(person_id)
         formated_response = self.__format_response(extrato_info)
         return formated_response
 
@@ -46,14 +46,14 @@ class PessoaJuridicaExtratoController(PessoaJuridicaExtratoControllerInterface):
         if person_id is None:
             raise Exception("ID obrigatório.")
 
-    def __realizar_saque(self, person_id: int) -> None:
-        self.__pessoa_juridica_repository.realizar_extrato(person_id)
+    def __realizar_extrato(self, person_id: int) -> dict:
+        return self.__pessoa_juridica_repository.realizar_extrato(person_id)
 
     def __format_response(self, extrato_info: dict) -> dict:
         return {
             "data": {
                 "type": "Extrato",
-                "count": 1,
+                "count": len(extrato_info["saques"]),
                 "attributes": extrato_info
             }
         }
