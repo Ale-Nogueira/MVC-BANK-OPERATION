@@ -1,4 +1,5 @@
 from src.models.sqlite.interfaces.cliente_interface import ClienteInterface
+from src.errors.error_types.http_bad_request import HttpBadRequestError
 from .interfaces.pessoa_juridica_controller import PessoaJuridicaExtratoControllerInterface, PessoaJuridicaSaqueControllerInterface
 
 class PessoaJuridicaSaqueController(PessoaJuridicaSaqueControllerInterface):
@@ -16,7 +17,7 @@ class PessoaJuridicaSaqueController(PessoaJuridicaSaqueControllerInterface):
 
     def __validate_id_and_valor(self, person_id: int, valor: int) -> None:
         if person_id is None or valor is None:
-            raise Exception("ID e valor são obrigatórios.")
+            raise HttpBadRequestError("ID e valor são obrigatórios.")
 
     def __sacar_dinheiro(self, person_id: int, valor: int) -> None:
         self.__pessoa_juridica_repository.sacar_dinheiro(person_id,valor)
@@ -44,7 +45,7 @@ class PessoaJuridicaExtratoController(PessoaJuridicaExtratoControllerInterface):
 
     def __validate_id(self, person_id: int) -> None:
         if person_id is None:
-            raise Exception("ID obrigatório.")
+            raise HttpBadRequestError("ID obrigatório.")
 
     def __realizar_extrato(self, person_id: int) -> dict:
         return self.__pessoa_juridica_repository.realizar_extrato(person_id)

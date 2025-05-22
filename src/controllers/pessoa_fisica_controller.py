@@ -1,6 +1,6 @@
 from src.models.sqlite.interfaces.cliente_interface import ClienteInterface
+from src.errors.error_types.http_bad_request import HttpBadRequestError
 from .interfaces.pessoa_fisica_controller import PessoaFisicaExtratoControllerInterface, PessoaFisicaSaqueControllerInterface
-
 class PessoaFisicaSaqueController(PessoaFisicaSaqueControllerInterface):
     def __init__(self, pessoa_fisica_repository: ClienteInterface) -> None:
         self.__pessoa_fisica_repository = pessoa_fisica_repository
@@ -16,7 +16,7 @@ class PessoaFisicaSaqueController(PessoaFisicaSaqueControllerInterface):
 
     def __validate_id_and_valor(self, person_id: int, valor: int) -> None:
         if person_id is None or valor is None:
-            raise Exception("ID e valor são obrigatórios.")
+            raise HttpBadRequestError("ID e valor são obrigatórios.")
 
     def __sacar_dinheiro(self, person_id: int, valor: int) -> None:
         self.__pessoa_fisica_repository.sacar_dinheiro(person_id,valor)
@@ -44,7 +44,7 @@ class PessoaFisicaExtratoController(PessoaFisicaExtratoControllerInterface):
 
     def __validate_id(self, person_id: int) -> None:
         if person_id is None:
-            raise Exception("ID obrigatório.")
+            raise HttpBadRequestError("ID obrigatório.")
 
     def __realizar_extrato(self, person_id: int) -> dict:
         return self.__pessoa_fisica_repository.realizar_extrato(person_id)
