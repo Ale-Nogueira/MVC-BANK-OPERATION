@@ -2,6 +2,8 @@ from typing import List
 import re
 from src.models.sqlite.interfaces.bank_interface import BankInterface
 from src.models.sqlite.entities.pessoa_juridica import PessoaJuridicaTable
+from src.errors.error_types.http_not_found import HttpNotFoundError
+from src.errors.error_types.http_bad_request import HttpBadRequestError
 from .interfaces.bank_controller_pessoa_juridica import BankFinderControllerInterface, BankInsertControllerInterface, BankListControllerInterface
 
 class BankListController(BankListControllerInterface):
@@ -52,7 +54,7 @@ class BankInsertController(BankInsertControllerInterface):
         non_valid_caracteres = re.compile(r'[^a-zA-Z\s]')
 
         if non_valid_caracteres.search(nome_fantasia):
-            raise Exception("Nome da empresa invalido!")
+            raise HttpBadRequestError("Nome da empresa invalido!")
 
     def __insert_person_in_db(self, faturamento= int, idade=int, nome_fantasia= str, celular= int, email_corporativo= str, categoria= str, saldo= int) -> None:
         self.__bank_repository.insert_pessoa_juridica(faturamento, idade, nome_fantasia, celular, email_corporativo, categoria, saldo)
@@ -78,7 +80,7 @@ class BankFinderController(BankFinderControllerInterface):
     def __find_person_ind_db(self, person_id: int) -> PessoaJuridicaTable:
         person = self.__bank_repository.get_person_juridica(person_id)
         if not person:
-            raise Exception("Empresa não encontrada!")
+            raise HttpNotFoundError("Empresa não encontrada!")
 
         return person
 
